@@ -18,8 +18,7 @@ const createLintingRule = () => ({
     emitWarning: !config.dev.showEslintErrorsInOverlay
   }
 })
-console.log(`【${process.env.NODE_ENV}】`)
-console.log(`【${process.env.NODE_ENV === 'production'}】`)
+
 module.exports = {
   context: path.resolve(__dirname, '../'),
   entry: {

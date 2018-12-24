@@ -90,7 +90,7 @@ export default {
   data () {
     return {
       msg: 'Welcome to Your Vue.js App ?',
-      id: 'logo',
+      id: 'logo'
     }
   },
   mounted () {
