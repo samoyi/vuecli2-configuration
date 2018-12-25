@@ -23,7 +23,7 @@ const spinner = ora('building for production...')
 // 命令行提示正在构建
 spinner.start()
 
-// 清空之前生产构建生成的静态文件，即static中的内容
+// 清空之前生产构建生成的静态文件，即`/dist/static/`中的内容
 // rimraf 的回调参数不管有没有错误都会被调用
 rm(path.join(config.build.assetsRoot, config.build.assetsSubDirectory), err => {
   if (err) throw err
