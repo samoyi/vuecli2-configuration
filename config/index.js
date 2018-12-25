@@ -52,7 +52,7 @@ module.exports = {
     // If you have problems debugging vue-files in devtools,
     // set this to false - it *may* help
     // https://vue-loader.vuejs.org/en/options.html#cachebusting
-    // 不懂这里是怎么配置的 文档也失效
+    // 不懂 vue-loader 没有该配置 上面的连接也失效
     cacheBusting: true,
 
     // 不懂这里是怎么配置
