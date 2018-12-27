@@ -5,7 +5,6 @@ const path = require('path')
 const utils = require('./utils')
 const config = require('../config')
 const vueLoaderConfig = require('./vue-loader.conf')
-console.log(vueLoaderConfig);
 // 返回相对于根目录的 dir 路径的绝对路径
 // 例如在我的情况下，`resolve('src')`返回`D:\gits\vuecli2-configuration\src`
 function resolve (dir) {
@@ -90,7 +89,7 @@ module.exports = {
     node: {
         // node 选项可以配置是否 polyfill 或 mock 某些 Node.js 全局变量和模块。这可以使最初为 Node.js 环境编写的代码，在其他环境（如浏览器）中运行。
         // 下面的配置会禁止 polyfill 或禁止 mock 重复或无用的全局变量和模块
-        
+
         // prevent webpack from injecting useless setImmediate polyfill because Vue
         // source contains it (although only uses it if it's native).
         setImmediate: false,

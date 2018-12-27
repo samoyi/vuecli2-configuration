@@ -5,19 +5,25 @@ const webpack = require('webpack')
 const config = require('../config')
 const merge = require('webpack-merge')
 const baseWebpackConfig = require('./webpack.base.conf')
+// 用来把`/static/中的文件拷贝到构建目录`
 const CopyWebpackPlugin = require('copy-webpack-plugin')
+// 自动生成 HTML 文件
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+// 用于提取 CSS 为独立的文件
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
+// 优化和压缩 CSS。关于压缩，官方文档提到了可以识别重复的 entry
 const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 
 // 如果当前不是测试环境，则设置环境变量为生产环境的环境变量
 const env = process.env.NODE_ENV === 'testing'
-? require('../config/test.env')
-: require('../config/prod.env')
+    ? require('../config/test.env')
+    : require('../config/prod.env')
 
 const webpackConfig = merge(baseWebpackConfig, {
     module: {
+        // 单独样式文件（非`.vue`里面的样式）的配置
+        // 相比于开发构建，这里还会提取 CSS 为单独的文件
         rules: utils.styleLoaders({
             sourceMap: config.build.productionSourceMap,
             extract: true,
@@ -32,23 +38,34 @@ const webpackConfig = merge(baseWebpackConfig, {
     },
     plugins: [
         // http://vuejs.github.io/vue-loader/en/workflow/production.html
+        // The DefinePlugin allows you to create global constants which can be configured at compile time.
         new webpack.DefinePlugin({
+            // 设置环境变量为上面确定的测试或生产环境的环境变量
             'process.env': env
         }),
+
         new UglifyJsPlugin({
+            // 文档对`uglifyOptions`的说明是“UglifyJS minify options.”。不懂什么意思。文档对`options`给出了连接
             uglifyOptions: {
+                // pass `false` to skip compressing entirely. Pass an object to specify custom compress options.
                 compress: {
+                    // 对`warning`的解释是 display warnings when dropping unreachable code or unused declarations etc.默认就是 false。不懂
                     warnings: false
                 }
             },
+            // `productionSourceMap`设置的值为`true`
             sourceMap: config.build.productionSourceMap,
+            // Use multi-process parallel running to improve the build speed. Default number of concurrent runs: `os.cpus().length - 1`.
+            // Parallelization can speedup your build significantly and is therefore highly recommended.
             parallel: true
         }),
         // extract css into its own file
         new ExtractTextPlugin({
+            // 提取生成的 css 文件路径
             filename: utils.assetsPath('css/[name].[contenthash].css'),
             // Setting the following option to `false` will not extract CSS from codesplit chunks.
             // Their CSS will instead be inserted dynamically with style-loader when the codesplit chunk has been loaded by webpack.
+            // 下面的说明不懂
             // It's currently set to `true` because we are seeing that sourcemaps are included in the codesplit bundle as well when it's `false`,
             // increasing file size: https://github.com/vuejs-templates/webpack/issues/1110
             allChunks: true,
@@ -65,9 +82,11 @@ const webpackConfig = merge(baseWebpackConfig, {
         // see https://github.com/ampedandwired/html-webpack-plugin
         new HtmlWebpackPlugin({
             filename: process.env.NODE_ENV === 'testing'
-            ? 'index.html'
-            : config.build.index,
-            template: 'index.html', // HTML 的模板文件
+                ? 'index.html'
+                : config.build.index,
+            // HTML 的模板文件
+            template: 'index.html',
+            // 构建生成的 JS 文件被插入到 HTML `body`底部
             inject: true,
             minify: {
                 removeComments: true,
@@ -77,13 +96,18 @@ const webpackConfig = merge(baseWebpackConfig, {
                 // https://github.com/kangax/html-minifier#options-quick-reference
             },
             // necessary to consistently work with multiple chunks via CommonsChunkPlugin
+            // 不懂。如果有多个 JS 插入，难道按照依赖顺序插入不是必然的吗？为什么还有其他选项
             chunksSortMode: 'dependency'
         }),
         // keep module.id stable when vendor modules does not change
+        // 不懂
         new webpack.HashedModuleIdsPlugin(),
         // enable scope hoisting
+        // 不懂
         new webpack.optimize.ModuleConcatenationPlugin(),
+
         // split vendor js into its own file
+        // 下面三个`CommonsChunkPlugin`因为在 webpack 中被使用了而且比较麻烦，懒得看了 TODO
         new webpack.optimize.CommonsChunkPlugin({
             name: 'vendor',
             minChunks (module) {
@@ -114,6 +138,7 @@ const webpackConfig = merge(baseWebpackConfig, {
         }),
 
         // copy custom static assets
+        // 将`/static/`下的静态资源拷贝到构建输出目录的静态资源子目录
         new CopyWebpackPlugin([
             {
                 from: path.resolve(__dirname, '../static'),
@@ -131,6 +156,7 @@ if (config.build.productionGzip) {
 
     webpackConfig.plugins.push(
         new CompressionWebpackPlugin({
+            // 看起来是生成的文件的路径，不过文档里并没有该属性。不懂
             asset: '[path].gz[query]',
             algorithm: 'gzip',
             test: new RegExp(
@@ -138,7 +164,9 @@ if (config.build.productionGzip) {
                 config.build.productionGzipExtensions.join('|') +
                 ')$'
             ),
+            // 大于 10240bytes 才压缩
             threshold: 10240,
+            // 压缩比优于 0.8 的才会被处理。不懂具体怎么实现
             minRatio: 0.8
         })
     )
